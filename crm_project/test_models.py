@@ -69,3 +69,36 @@ def test_acuular_ventas(servicio_vendedores):
 
     assert vendedor.ventas_totales == 2000
 
+@pytest.mark.parametrize( "email_prueba, esperado_es_existoso", [
+    ("juan@ejemplo",True),
+    ("juan@empresa.mx", True),
+    ("juan-google.com",False),
+    ("angel@",True),
+    ("",False)
+])
+def test_email_leads_many(servicio_leads,email_prueba,esperado_es_existoso):
+
+    lead = servicio_leads.registrar_nuevo_lead("Test", "User", email_prueba, 1000)
+
+    if esperado_es_existoso:
+        assert lead is not None
+        assert lead.email == email_prueba
+    else:
+        assert lead is None
+
+@pytest.mark.parametrize("gafete_prueba, esperado_status", [
+    ("V-001", True),
+    ("V-9999", True),
+    ("123431", False),
+    ("v-001", False),
+    ("A-001", False)
+])
+def test_gafetes_many(servicio_vendedores, gafete_prueba, esperado_status):
+
+    vendedor = servicio_vendedores.contratar_vendedor("test", "ventas", "ventas@test.com", gafete_prueba)
+
+    if esperado_status:
+        assert vendedor is not None
+        assert vendedor.n_empleado == gafete_prueba
+    else:
+        assert vendedor is None
