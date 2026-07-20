@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: rpg_postgre
+    restart: always
+    environment:
+      POSTGRES_DB: ${database_name}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "10.177.43.62:5560:5432"
+
+  app:
+    image: python:3.11-slim
+    container_name: rpg_python
+    env_file:
+      - .env
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    command: sh -c "pip install -r requirements.txt && tail -f /dev/null"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
