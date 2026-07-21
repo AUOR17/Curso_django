@@ -1,0 +1,31 @@
+services:
+  db_django:
+    image: postgres:15-alpine
+    container_name: database_django
+    restart: always
+    environment:
+      POSTGRES_DB: ${database_django}
+      POSTGRES_USER: ${database_user}
+      POSTGRES_PASSWORD: ${database_psw}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "10.177.43.62:5580:5432"
+
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile-python.dev
+    container_name: rpg_backend
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db_django
+
+volumes:
+  postgres_data:
