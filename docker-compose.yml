@@ -1,0 +1,50 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: castlevania_db
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PSW}
+    ports:
+      - "${DATABASE_PORT}:5432"
+    volumes:
+      - postgres_data_castle:/var/lib/postgresql/data
+    networks:
+      - rpg_network
+
+  backend_core:
+    build: ./backend
+    container_name: castle_backend
+    volumes:
+      - ./backend:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+    ports:
+      - "${DJANGO_PORT}:8000"
+    networks:
+      - rpg_network
+
+  frontend:
+    build: ./frontend
+    container_name: castle_frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "${FRONTEND_PORT}:5173"
+    stdin_open: true
+    tty: true
+    networks:
+      - rpg_network
+    depends_on:
+      - backend_core
+
+networks:
+  rpg_network:
+    driver: bridge
+
+volumes:
+  postgres_data_castle:
