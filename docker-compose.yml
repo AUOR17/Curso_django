@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PSW}
     ports:
-      - "${DATABASE_PORT}:5432"
+      - "${EXTERNAL_DB_PORT}:5432"
     volumes:
       - postgres_data_castle:/var/lib/postgresql/data
     networks:
