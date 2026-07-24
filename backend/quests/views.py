@@ -83,3 +83,21 @@ class QuestViewSet(viewsets.ModelViewSet):
         return Response({
             'mensaje': f'Recompensa entregada con éxito a {cazador.username}'
         })
+
+class LeadViewSet(viewsets.ModelViewSet):
+    queryset = Lead.objects.all().order_by('-created_at')
+    serializer_class = LeadSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role in ['MAESTRO', 'GRAN_MAESTRO']:
+            return Lead.objects.all().order_by('-created_at')
+        return Lead.objects.filter(assigned_hunter=user).order_by('-created_at')
+    
+    def perform_create(self, serializer):
+        user = self.request.user
+        if user.role not in ['GRAN_MAESTRO', 'MAESTRO']:
+            serializer.save(assigned_hunter=user)
+        else:
+            serializer.save()
