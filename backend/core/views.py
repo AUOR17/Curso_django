@@ -57,7 +57,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
         return response
 
-class CookieTokenRefreshPairView(TokenRefreshView):
+class CookieTokenRefreshView(TokenRefreshView):
 
     def post(self, request, *args, **kwargs):
 
@@ -167,3 +167,61 @@ class UsuarioViewSet(viewsets.ViewSet):
         return Response(
             {'mensaje:' f'Se liquidaron {monto} de la cuenta de {user.username}.'}
         )
+
+    @action(detail=True, methods=['post'])
+    def reclutar(self, request, pk=None):
+
+        if request.role not in ['MAESTRO', 'GRAN MAESTRO']:
+            return Response({'Error': 'No tienes el rango suficiente'}, status=403)
+
+        cazador = get_object_or_404(User, id=pk)
+
+        # Validaciones
+
+        if cazador.gremio is not None:
+            return Response({'Error': 'Este cazador ya pertenece a un gremio'}, status=400)
+
+        if cazador.role in ['MAESTRO', 'GRAN_MAESTRO']:
+            return Response({'error': 'No puedes reclutar a un líder.'}, status=400)
+
+        if cazador.role == 'MAESTRO':
+            if not request.user.gremio:
+                return Response({'error': 'No puedes reclutrar: primero debes fundar o ser asignado a una Sede'}, status=400)
+
+            cazador.gremio = request.gremio
+        else:
+
+            gremio_id = request.data.get('gremio_id')
+            if not gremio_id:
+                return Response({'error': 'Se debe especificar un gremio_id'}, status=400)
+            cazador.gremio = get_object_or_404(Gremio, id=gremio_id)
+
+        cazador.save()
+        return Response({'mensaje': f'{cazador.username} se unio al gremio {cazador.gremio.nombre}'})
+
+    @action(detail=True, methods=['post'])
+    def expulsar(self, request, pk=None):
+
+        if request.role not in ['MAESTRO', 'GRAN_MAESTRO']:
+            return Response({'error': 'No tienes rango suficiente'}, status=403)
+
+        cazador = get_object_or_404(User, id=pk)
+
+        if cazador.gremio is None:
+            return Response({'error': 'Este cazador no pertenece a ningun gremio'}, status=400)
+
+        if cazador.role in ['MAESTRO', 'GRAN_MAESTRO']:
+            return Response({'error': 'No puedes expulsar al lider'}, status=400)
+
+        if request.user.role == 'MAESTRO' and cazador.gremio != request.user.gremio:
+            return Response({'error': 'Solo puedes expulsar cazadores de tu propio gremio'}, status=403)
+
+        nombre_gremio = cazador.gremio.nombre
+        cazador.gremio = None
+        cazador.save()
+
+        return Response({'mensaje': f'{cazador.username} fue expulsado de {nombre_gremio}'})
+
+        
+
+        
