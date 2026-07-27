@@ -23,7 +23,7 @@ class GremioListView(APIView):
             cazadores = User.objects.filter(
                 Q(gremio=request.user.gremio) |
                 Q(role__in = ['MAESTRO', 'GRAN_MAESTRO']) | 
-                Q(greio__isnull = True)
+                Q(gremio__isnull = True)
             ).select_related('gremio').distinct().order_by('-level', 'experience')
 
         serializer = CazadorSerializer(cazadores, many=True)
