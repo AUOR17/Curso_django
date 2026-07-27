@@ -63,10 +63,12 @@ class CookieTokenRefreshView(TokenRefreshView):
 
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
 
-        if refresh_token and 'refresh' not in request.data:
+        if isinstance(request.data, dict):
+                request.data['refresh'] = refresh_token
+        else:
             request.data._mutable = True
             request.data['refresh'] = refresh_token
-            request.data._mutable = False            
+            request.data._mutable = False           
 
         response = super().post(request, *args, **kwargs)
 
