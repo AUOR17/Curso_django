@@ -6,21 +6,21 @@ from .models import User
 class CustomUserAdmin(UserAdmin):
 
     # Columnas que se muestran en la lista principal de usuarios.
-    list_display = ('username', 'email', 'role', 'leve', 'gremio', 'gold','is_staff')
+    list_display = ('username', 'email', 'role', 'level', 'gremio', 'gold','is_staff')
 
     # Filtros lterales para buscar el rol
-    list_filter = ('role', 'gremio', 'leve', 'is_staff')
+    list_filter = ('role', 'gremio', 'level', 'is_staff')
 
     # Añadir los campos al formulario de edicion
     fieldsets = UserAdmin.fieldsets + (
         ('Atributos de Heroe', {
-            'fields': ('role', 'leve', 'experience', 'gold', 'gremio'),
+            'fields': ('role', 'level', 'experience', 'gold', 'gremio'),
         }),
     )
 
     # Añadir los campos al formulario de creacion "Crear Usuario"
     add_fieldsets = UserAdmin.add_fieldsets + (
             ('Atributos de Heroe', {
-                'fields': ('role', 'leve', 'experience', 'gold', 'gremio'),
+                'fields': ('role', 'level', 'experience', 'gold', 'gremio'),
             }),
         )
