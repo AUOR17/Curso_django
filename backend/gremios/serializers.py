@@ -32,4 +32,4 @@ class CazadorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'role', 'leve', 'gold', 'gremio_id', 'gremio_nombre']
+        fields = ['id', 'username', 'role', 'level', 'gold', 'gremio_id', 'gremio_nombre']
