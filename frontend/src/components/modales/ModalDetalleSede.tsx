@@ -41,9 +41,19 @@ export default function ModalDetalleSede({ onClose, gremioId, gremioNombre }: Mo
             <div>
                 {miembros.map(m=>(
                     <div key={m.id} className={`flex justify-between items-center p-4 rounded-lg border ${m.role ==='MAESTRO' ? 'bg-rpg-blood/10 border-rpg-blood/50': 'bg-rpg-dark border-purple-500/20'}`}>
-                        
+                        <div className="flex items-center gap-3">
+                            {m.role === 'MAESTRO' && <Crown className="w-5 h-5 text-rpg-gold" />}
+                            <div>
+                            <p className={`font-bold ${m.role === 'MAESTRO' ? 'text-rpg-gold' : 'text-rpg-bone'}`}>{m.username}</p>
+                            <p className="text-xs text-rpg-silver">{m.role} • Lvl {m.level}</p>
+                            </div>
+                        </div>
+                        <div className="text-rpg-gold font-bold flex items-center gap-1 text-sm">
+                            {m.gold} <Coins className="w-4 h-4"/>
+                        </div>
                     </div>
                 ))}
+                {miembros.length === 0 && <p className='text-center text-rpg-silver italic'>Esta sede esta completamente abandonada</p>}
             </div>
          )}
 
