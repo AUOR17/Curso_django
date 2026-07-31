@@ -4,32 +4,43 @@ from .models import Gremio
 
 User = get_user_model()
 
+
 class GremioSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Gremio
-        fields = ['id', 'nombre', 'descripcion']
+        fields = ["id", "nombre", "descripcion"]
+
 
 class MaestroSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'gremio']
-        extra_kwargs = {'password':{'write_only': True}}
+        fields = ["username", "password", "gremio"]
+        extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
         user = User(
-            username = validated_data['username'],
-            role = 'MAESTRO', 
-            gremio = validated_data['gremio']
+            username=validated_data["username"],
+            role="MAESTRO",
+            gremio=validated_data["gremio"],
         )
-        user.set_password(validated_data['password'])
+        user.set_password(validated_data["password"])
         user.save()
         return user
 
+
 class CazadorSerializer(serializers.ModelSerializer):
-    gremio_nombre = serializers.CharField(source = 'gremio.nombre', read_only=True)
+    gremio_nombre = serializers.CharField(source="gremio.nombre", read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'role', 'level', 'gold', 'gremio_id', 'gremio_nombre']
+        fields = [
+            "id",
+            "username",
+            "role",
+            "level",
+            "gold",
+            "gremio_id",
+            "gremio_nombre",
+        ]
