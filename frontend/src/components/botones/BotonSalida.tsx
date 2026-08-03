@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { apiDjango } from '../../api/client';
-import { error } from 'console';
 
 export default function BotonSalida() {
     const { logout } = useAuth(); 
@@ -11,7 +10,7 @@ export default function BotonSalida() {
         try {
             await apiDjango.post('/logout/');
         }
-        catch{
+        catch (error){
             console.error("Error al salir de la app", error);
         }
         finally{
